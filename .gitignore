@@ -36,7 +36,7 @@ dist-ssr/
 .env
 .env.local
 .env.production
-
+backend/.env.example
 # IDEs
 .vscode/
 .idea/
