@@ -6,7 +6,7 @@ import './App.css'
 
 function App() {
   const [selectedLocation, setSelectedLocation] = useState(null)
-  const [buildingFootprint, setBuilding Footprint] = useState(null)
+  const [buildingFootprint, setBuildingFootprint] = useState(null)
   const [analysisResults, setAnalysisResults] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [mode, setMode] = useState(null) // null, 'building', 'highway'
@@ -34,6 +34,9 @@ function App() {
     setAnalysisResults(null)
     setMode(null)
   }
+
+  const [buildingStories, setBuildingStories] = useState(8) // Add this state
+
 
   return (
     <div className="w-screen h-screen flex flex-col">
@@ -86,6 +89,7 @@ function App() {
             onLocationSelect={handleLocationSelect}
             onFootprintComplete={handleFootprintComplete}
             mode={mode}
+            buildingStories={buildingStories}
           />
           
           {isAnalyzing && (
@@ -107,6 +111,7 @@ function App() {
               buildingFootprint={buildingFootprint}
               onAnalysisStart={handleAnalysisStart}
               onAnalysisComplete={handleAnalysisComplete}
+              onStoriesChange={setBuildingStories}
             />
           </div>
         )}

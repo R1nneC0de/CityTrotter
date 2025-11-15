@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { analyzeBuilding } from '../services/api'
 
-function BuildingPlacer({ selectedLocation, onAnalysisStart, onAnalysisComplete }) {
+function BuildingPlacer({ selectedLocation, onAnalysisStart, onAnalysisComplete, onStoriesChange }) {
   const [formData, setFormData] = useState({
     type: 'residential',
     units: 300,
@@ -11,10 +11,17 @@ function BuildingPlacer({ selectedLocation, onAnalysisStart, onAnalysisComplete 
 
   const handleChange = (e) => {
     const { name, value } = e.target
+    const newValue = name === 'type' ? value : parseInt(value) || 0
+    
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'type' ? value : parseInt(value) || 0
+      [name]: newValue
     }))
+    
+    // Notify parent of stories change for 3D building update
+    if (name === 'stories' && onStoriesChange) {
+      onStoriesChange(newValue)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -28,9 +35,7 @@ function BuildingPlacer({ selectedLocation, onAnalysisStart, onAnalysisComplete 
     onAnalysisStart()
 
     try {
-      // Create a simple rectangular footprint around the selected point
-      // In production, this would be drawn by the user
-      const offset = 0.001 // ~100m offset
+      const offset = 0.001
       const footprint = [
         [selectedLocation.lng - offset, selectedLocation.lat - offset],
         [selectedLocation.lng + offset, selectedLocation.lat - offset],

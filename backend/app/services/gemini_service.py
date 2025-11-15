@@ -1,61 +1,41 @@
-"""
-Gemini AI service for generating planning reports
-"""
-
-from app.models.analysis import AIReport
 from app.config import settings
 from datetime import datetime
-import os
 
 
-async def generate_planning_report(analysis_data: dict) -> AIReport:
-    """
-    Generate AI-enhanced planning report using Google Gemini
-    
-    Args:
-        analysis_data: Complete analysis results
-    
-    Returns:
-        AIReport with AI-generated summary
-    """
+async def generate_planning_report(analysis_data):
+    """Generate AI-enhanced planning report using Google Gemini"""
     
     # Check if Gemini API key is configured
     if not settings.GEMINI_API_KEY:
-        # Return a template report if no API key
-        return AIReport(
-            ai_summary=generate_template_report(analysis_data),
-            timestamp=datetime.now()
-        )
+        return {
+            "ai_summary": generate_template_report(analysis_data),
+            "timestamp": datetime.now()
+        }
     
     try:
-        # Import here to avoid dependency issues if not using Gemini
         import google.generativeai as genai
         
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.0-flash-exp')  # ✅ UPDATED to latest model
         
         prompt = create_analysis_prompt(analysis_data)
-        
         response = model.generate_content(prompt)
         
-        return AIReport(
-            ai_summary=response.text,
-            timestamp=datetime.now()
-        )
+        return {
+            "ai_summary": response.text,
+            "timestamp": datetime.now()
+        }
         
     except Exception as e:
-        # Fallback to template if API fails
         print(f"Gemini API error: {str(e)}")
-        return AIReport(
-            ai_summary=generate_template_report(analysis_data),
-            timestamp=datetime.now()
-        )
+        return {
+            "ai_summary": generate_template_report(analysis_data),
+            "timestamp": datetime.now()
+        }
 
 
-def create_analysis_prompt(data: dict) -> str:
-    """
-    Create structured prompt for Gemini
-    """
+def create_analysis_prompt(data):
+    """Create structured prompt for Gemini"""
     building = data["building"]
     zoning = data["zoning"]
     school = data["school_impact"]
@@ -68,81 +48,81 @@ def create_analysis_prompt(data: dict) -> str:
 
 PROPOSED DEVELOPMENT:
 - Location: Atlanta, GA ({building["location"]["lat"]}, {building["location"]["lng"]})
-- Type: {building["type"].title()}
+- Type: {building["type"].title()}  # ✅ This is already dynamic
 - Size: {building["units"]} units, {building["stories"]} stories
 - Parking: {building["parking_spaces"]} spaces
 
 ANALYSIS RESULTS:
 
-Zoning: {"✓ Compliant" if zoning.compliant else "✗ Violations: " + ", ".join(zoning.violations)}
-Zone: {zoning.zone}
+Zoning: {"✓ Compliant" if zoning["compliant"] else "✗ Violations: " + ", ".join(zoning["violations"])}
+Zone: {zoning["zone"]}
 
 School Impact:
-- New students: {school.students_generated:.0f}
-- Bottlenecks: {len(school.bottlenecks)} schools overcapacity
-{format_school_bottlenecks(school.bottlenecks)}
+- New students: {school["students_generated"]:.0f}
+- Bottlenecks: {len(school["bottlenecks"])} schools overcapacity
+{format_school_bottlenecks(school["bottlenecks"])}
 
 Traffic Impact:
-- Daily trips: {traffic.daily_trips:,}
-- Peak hour trips: AM {traffic.peak_trips["am"]}, PM {traffic.peak_trips["pm"]}
-- Degraded intersections: {len(traffic.los_impacts)}
+- Daily trips: {traffic["daily_trips"]:,}
+- Peak hour trips: AM {traffic["peak_trips"]["am"]}, PM {traffic["peak_trips"]["pm"]}
+- Degraded intersections: {len(traffic["los_impacts"])}
 
-Transit Access: {transit.transit_score}
-- Nearest station: {transit.nearest_station.name} ({transit.walk_time_minutes:.1f} min walk)
+Transit Access: {transit["transit_score"]}
+- Nearest station: {transit["nearest_station"]["name"]} ({transit["walk_time_minutes"]:.1f} min walk)
 
-Infrastructure: {"Adequate" if infra.infrastructure_adequate else "Upgrades needed"}
-- Water demand: {infra.water_demand:,.0f} gpd
-- Upgrades needed: {", ".join(infra.upgrades_needed) if infra.upgrades_needed else "None"}
-- Cost: ${infra.estimated_cost:,.0f}
+Infrastructure: {"Adequate" if infra["infrastructure_adequate"] else "Upgrades needed"}
+- Water demand: {infra["water_demand"]:,.0f} gpd
+- Upgrades needed: {", ".join(infra["upgrades_needed"]) if infra["upgrades_needed"] else "None"}
+- Cost: ${infra["estimated_cost"]:,.0f}
 
 Economics:
-- Annual tax revenue: ${economic.annual_tax_revenue:,.0f}
-- Infrastructure cost: ${economic.infrastructure_cost:,.0f}
-- Break-even: {economic.years_to_breakeven:.1f} years
-- Jobs: {economic.construction_jobs} construction, {economic.permanent_jobs} permanent
+- Annual tax revenue: ${economic["annual_tax_revenue"]:,.0f}
+- Infrastructure cost: ${economic["infrastructure_cost"]:,.0f}
+- Break-even: {economic["years_to_breakeven"]:.1f} years
+- Jobs: {economic["construction_jobs"]} construction, {economic["permanent_jobs"]} permanent
 
 Provide:
 1. **Executive Summary** (2-3 sentences highlighting key findings)
 2. **Critical Issues** (top 3 concerns with severity)
 3. **Recommendations** (3 specific, actionable suggestions to mitigate impacts)
-4. **Timeline Estimate** (permitting duration based on complexity and likely opposition)
+4. **Timeline Estimate** (permitting duration based on complexity)
 
-Keep it professional but concise. Use bullet points for clarity.
+Keep it professional but concise. Use bullet points.
 """
     
     return prompt
 
 
-def format_school_bottlenecks(bottlenecks: list) -> str:
+def format_school_bottlenecks(bottlenecks):
     """Format school bottlenecks for prompt"""
     if not bottlenecks:
         return "- None"
     
     lines = []
-    for b in bottlenecks[:3]:  # Top 3
+    for b in bottlenecks[:3]:
         lines.append(f"  - {b['school']}: {b['capacity_pct']:.0f}% capacity ({b['severity']})")
     return "\n".join(lines)
 
 
-def generate_template_report(data: dict) -> str:
-    """
-    Generate template report when Gemini is unavailable
-    """
+def generate_template_report(data):
+    """Generate template report when Gemini is unavailable"""
     building = data["building"]
+    building_type = building["type"]  # ✅ FIXED: Get actual building type
     bottlenecks = []
     
-    if not data["zoning"].compliant:
+    if not data["zoning"]["compliant"]:
         bottlenecks.append("Zoning compliance issues")
-    if data["school_impact"].bottlenecks:
-        bottlenecks.append(f"{len(data['school_impact'].bottlenecks)} schools over capacity")
-    if data["traffic_impact"].los_impacts:
+    if data["school_impact"]["bottlenecks"]:
+        bottlenecks.append(f"{len(data['school_impact']['bottlenecks'])} schools over capacity")
+    if data["traffic_impact"]["los_impacts"]:
         bottlenecks.append("Traffic congestion at nearby intersections")
-    if not data["infrastructure"].infrastructure_adequate:
+    if not data["infrastructure"]["infrastructure_adequate"]:
         bottlenecks.append("Infrastructure upgrades required")
     
+    # ✅ FIXED: Use actual building type instead of hardcoded "residential"
     report = f"""**Executive Summary**
 
-The proposed {building["units"]}-unit residential development presents {"several challenges" if bottlenecks else "a viable opportunity"} for the community. {"Key concerns include: " + ", ".join(bottlenecks) + "." if bottlenecks else "Analysis shows generally positive impacts with manageable constraints."}
+The proposed {building["units"]}-unit {building_type} development presents {"several challenges" if bottlenecks else "a viable opportunity"} for the community. {"Key concerns include: " + ", ".join(bottlenecks) + "." if bottlenecks else "Analysis shows generally positive impacts with manageable constraints."}
 
 **Critical Issues**
 
@@ -154,7 +134,7 @@ The proposed {building["units"]}-unit residential development presents {"several
 
 1. Conduct detailed traffic impact study for affected intersections
 2. Coordinate with school district on capacity planning
-3. {"Secure funding for infrastructure upgrades" if data["infrastructure"].infrastructure_adequate == False else "Verify utility connections with service providers"}
+3. {"Secure funding for infrastructure upgrades" if not data["infrastructure"]["infrastructure_adequate"] else "Verify utility connections with service providers"}
 
 **Timeline Estimate**
 
