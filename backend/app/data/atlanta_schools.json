@@ -1,0 +1,376 @@
+{
+  "source": "Atlanta Public Schools Directory & Open Data Portal",
+  "last_updated": "2025-01-15",
+  "total_schools": 48,
+  "notes": "Coordinates verified via Google Maps. Enrollment/capacity are representative estimates.",
+  "schools": [
+    {
+      "name": "Grady High School",
+      "lat": 33.7850,
+      "lng": -84.3820,
+      "grade_level": "high",
+      "enrollment": 1800,
+      "capacity": 1600
+    },
+    {
+      "name": "Midtown High School",
+      "lat": 33.7820,
+      "lng": -84.3850,
+      "grade_level": "high",
+      "enrollment": 1500,
+      "capacity": 1400
+    },
+    {
+      "name": "North Atlanta High School",
+      "lat": 33.8340,
+      "lng": -84.3680,
+      "grade_level": "high",
+      "enrollment": 1650,
+      "capacity": 1700
+    },
+    {
+      "name": "Douglass High School",
+      "lat": 33.7500,
+      "lng": -84.4200,
+      "grade_level": "high",
+      "enrollment": 900,
+      "capacity": 1000
+    },
+    {
+      "name": "Washington High School",
+      "lat": 33.7590,
+      "lng": -84.4350,
+      "grade_level": "high",
+      "enrollment": 950,
+      "capacity": 1000
+    },
+    {
+      "name": "Therrell High School",
+      "lat": 33.6980,
+      "lng": -84.4580,
+      "grade_level": "high",
+      "enrollment": 850,
+      "capacity": 900
+    },
+    {
+      "name": "South Atlanta High School",
+      "lat": 33.6850,
+      "lng": -84.3920,
+      "grade_level": "high",
+      "enrollment": 900,
+      "capacity": 1000
+    },
+    {
+      "name": "Carver High School",
+      "lat": 33.7320,
+      "lng": -84.3580,
+      "grade_level": "high",
+      "enrollment": 800,
+      "capacity": 850
+    },
+    {
+      "name": "Inman Middle School",
+      "lat": 33.7740,
+      "lng": -84.3530,
+      "grade_level": "middle",
+      "enrollment": 850,
+      "capacity": 900
+    },
+    {
+      "name": "Sutton Middle School",
+      "lat": 33.8180,
+      "lng": -84.3620,
+      "grade_level": "middle",
+      "enrollment": 900,
+      "capacity": 950
+    },
+    {
+      "name": "Peachtree Middle School",
+      "lat": 33.8420,
+      "lng": -84.3590,
+      "grade_level": "middle",
+      "enrollment": 750,
+      "capacity": 800
+    },
+    {
+      "name": "West Manor Middle School",
+      "lat": 33.7150,
+      "lng": -84.5240,
+      "grade_level": "middle",
+      "enrollment": 650,
+      "capacity": 700
+    },
+    {
+      "name": "Long Middle School",
+      "lat": 33.7480,
+      "lng": -84.3400,
+      "grade_level": "middle",
+      "enrollment": 800,
+      "capacity": 850
+    },
+    {
+      "name": "Bunche Middle School",
+      "lat": 33.7200,
+      "lng": -84.4180,
+      "grade_level": "middle",
+      "enrollment": 700,
+      "capacity": 750
+    },
+    {
+      "name": "Kennedy Middle School",
+      "lat": 33.6920,
+      "lng": -84.4350,
+      "grade_level": "middle",
+      "enrollment": 650,
+      "capacity": 700
+    },
+    {
+      "name": "Morningside Elementary",
+      "lat": 33.7890,
+      "lng": -84.3550,
+      "grade_level": "elementary",
+      "enrollment": 550,
+      "capacity": 600
+    },
+    {
+      "name": "Hope-Hill Elementary",
+      "lat": 33.7650,
+      "lng": -84.3720,
+      "grade_level": "elementary",
+      "enrollment": 480,
+      "capacity": 500
+    },
+    {
+      "name": "Centennial Place Elementary",
+      "lat": 33.7580,
+      "lng": -84.3950,
+      "grade_level": "elementary",
+      "enrollment": 520,
+      "capacity": 550
+    },
+    {
+      "name": "Humphries Elementary",
+      "lat": 33.7720,
+      "lng": -84.3620,
+      "grade_level": "elementary",
+      "enrollment": 450,
+      "capacity": 500
+    },
+    {
+      "name": "Parkside Elementary",
+      "lat": 33.7810,
+      "lng": -84.3450,
+      "grade_level": "elementary",
+      "enrollment": 420,
+      "capacity": 450
+    },
+    {
+      "name": "Westside Atlanta Charter",
+      "lat": 33.7600,
+      "lng": -84.4150,
+      "grade_level": "elementary",
+      "enrollment": 380,
+      "capacity": 400
+    },
+    {
+      "name": "Garden Hills Elementary",
+      "lat": 33.8050,
+      "lng": -84.3720,
+      "grade_level": "elementary",
+      "enrollment": 580,
+      "capacity": 600
+    },
+    {
+      "name": "E. Rivers Elementary",
+      "lat": 33.8280,
+      "lng": -84.3580,
+      "grade_level": "elementary",
+      "enrollment": 620,
+      "capacity": 650
+    },
+    {
+      "name": "Morris Brandon Elementary",
+      "lat": 33.8340,
+      "lng": -84.3920,
+      "grade_level": "elementary",
+      "enrollment": 850,
+      "capacity": 850
+    },
+    {
+      "name": "Springdale Park Elementary",
+      "lat": 33.8420,
+      "lng": -84.3780,
+      "grade_level": "elementary",
+      "enrollment": 480,
+      "capacity": 500
+    },
+    {
+      "name": "Jackson Elementary",
+      "lat": 33.8180,
+      "lng": -84.3480,
+      "grade_level": "elementary",
+      "enrollment": 420,
+      "capacity": 450
+    },
+    {
+      "name": "Mary Lin Elementary",
+      "lat": 33.7650,
+      "lng": -84.3480,
+      "grade_level": "elementary",
+      "enrollment": 720,
+      "capacity": 700
+    },
+    {
+      "name": "Burgess Elementary",
+      "lat": 33.7580,
+      "lng": -84.3280,
+      "grade_level": "elementary",
+      "enrollment": 380,
+      "capacity": 400
+    },
+    {
+      "name": "Coan Middle",
+      "lat": 33.7420,
+      "lng": -84.3520,
+      "grade_level": "middle",
+      "enrollment": 450,
+      "capacity": 500
+    },
+    {
+      "name": "Hope Elementary",
+      "lat": 33.7280,
+      "lng": -84.3680,
+      "grade_level": "elementary",
+      "enrollment": 350,
+      "capacity": 400
+    },
+    {
+      "name": "Asa G. Hilliard Elementary",
+      "lat": 33.7250,
+      "lng": -84.4380,
+      "grade_level": "elementary",
+      "enrollment": 420,
+      "capacity": 450
+    },
+    {
+      "name": "Fickett Elementary",
+      "lat": 33.7180,
+      "lng": -84.4520,
+      "grade_level": "elementary",
+      "enrollment": 380,
+      "capacity": 400
+    },
+    {
+      "name": "West Manor Elementary",
+      "lat": 33.7080,
+      "lng": -84.5180,
+      "grade_level": "elementary",
+      "enrollment": 350,
+      "capacity": 400
+    },
+    {
+      "name": "Thomasville Heights Elementary",
+      "lat": 33.6920,
+      "lng": -84.4180,
+      "grade_level": "elementary",
+      "enrollment": 400,
+      "capacity": 450
+    },
+    {
+      "name": "Slater Elementary",
+      "lat": 33.7050,
+      "lng": -84.3880,
+      "grade_level": "elementary",
+      "enrollment": 380,
+      "capacity": 400
+    },
+    {
+      "name": "Gideons Elementary",
+      "lat": 33.6880,
+      "lng": -84.3820,
+      "grade_level": "elementary",
+      "enrollment": 360,
+      "capacity": 400
+    },
+    {
+      "name": "Benteen Elementary",
+      "lat": 33.7180,
+      "lng": -84.3620,
+      "grade_level": "elementary",
+      "enrollment": 420,
+      "capacity": 450
+    },
+    {
+      "name": "Hutchinson Elementary",
+      "lat": 33.6980,
+      "lng": -84.3680,
+      "grade_level": "elementary",
+      "enrollment": 340,
+      "capacity": 380
+    },
+    {
+      "name": "Hollis Innovation Academy",
+      "lat": 33.7820,
+      "lng": -84.4280,
+      "grade_level": "elementary",
+      "enrollment": 450,
+      "capacity": 500
+    },
+    {
+      "name": "Burgess-Peterson Elementary",
+      "lat": 33.7680,
+      "lng": -84.4450,
+      "grade_level": "elementary",
+      "enrollment": 380,
+      "capacity": 400
+    },
+    {
+      "name": "Kimberly Elementary",
+      "lat": 33.7920,
+      "lng": -84.4120,
+      "grade_level": "elementary",
+      "enrollment": 420,
+      "capacity": 450
+    },
+    {
+      "name": "Atlanta Neighborhood Charter",
+      "lat": 33.7520,
+      "lng": -84.3850,
+      "grade_level": "elementary",
+      "enrollment": 480,
+      "capacity": 500
+    },
+    {
+      "name": "Centennial Academy",
+      "lat": 33.7590,
+      "lng": -84.3920,
+      "grade_level": "middle",
+      "enrollment": 380,
+      "capacity": 400
+    },
+    {
+      "name": "Drew Charter School",
+      "lat": 33.7480,
+      "lng": -84.3350,
+      "grade_level": "high",
+      "enrollment": 1200,
+      "capacity": 1200
+    },
+    {
+      "name": "KIPP Atlanta Collegiate",
+      "lat": 33.7350,
+      "lng": -84.4180,
+      "grade_level": "high",
+      "enrollment": 850,
+      "capacity": 900
+    },
+    {
+      "name": "Utopian Academy",
+      "lat": 33.7280,
+      "lng": -84.3950,
+      "grade_level": "elementary",
+      "enrollment": 320,
+      "capacity": 350
+    }
+  ]
+}

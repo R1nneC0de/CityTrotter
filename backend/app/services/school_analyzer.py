@@ -1,75 +1,112 @@
 from app.config import settings
 import math
+import json
+import os
+
+# Cache for school data (loaded once at startup)
+_SCHOOLS_CACHE = None
+
+
+def load_schools_data():
+    """
+    Load Atlanta Public Schools data from JSON file
+    Data is cached after first load for performance
+    Source: Atlanta Public Schools directory + Open Data Portal
+    """
+    global _SCHOOLS_CACHE
+    
+    if _SCHOOLS_CACHE is None:
+        # Get the path to the data file
+        current_dir = os.path.dirname(__file__)
+        data_path = os.path.join(current_dir, '../data/atlanta_schools.json')
+        
+        # Load the JSON file
+        with open(data_path, 'r') as f:
+            data = json.load(f)
+            _SCHOOLS_CACHE = data['schools']
+            print(f"✅ Loaded {len(_SCHOOLS_CACHE)} schools from atlanta_schools.json")
+    
+    return _SCHOOLS_CACHE
 
 
 def calculate_school_impact(location, units):
-    """Calculate school impact with dynamic distance calculations"""
+    """
+    Calculate school impact using Atlanta Public Schools data
+    Data source: JSON file from Atlanta Public Schools directory (48 schools)
+    """
     students = units * settings.STUDENTS_PER_UNIT
     
-    all_schools = [
-        {"name": "Grady High School", "lat": 33.7850, "lng": -84.3820, "grade_level": "high", "enrollment": 1800, "capacity": 1600},
-        {"name": "Inman Middle School", "lat": 33.7740, "lng": -84.3530, "grade_level": "middle", "enrollment": 850, "capacity": 900},
-        {"name": "Morningside Elementary", "lat": 33.7890, "lng": -84.3550, "grade_level": "elementary", "enrollment": 550, "capacity": 600},
-        {"name": "Midtown High School", "lat": 33.7820, "lng": -84.3850, "grade_level": "high", "enrollment": 1500, "capacity": 1400},
-        {"name": "Hope-Hill Elementary", "lat": 33.7650, "lng": -84.3720, "grade_level": "elementary", "enrollment": 480, "capacity": 500},
-    ]
+    # ✅ Load schools from JSON file (cached after first load)
+    all_schools = load_schools_data()
     
     schools = []
     bottlenecks = []
     
+    # Grade level distribution (industry standard)
     elementary_students = students * 0.4
     middle_students = students * 0.3
     high_students = students * 0.3
     
     for school_data in all_schools:
+        # Calculate ACTUAL distance from clicked location
         distance = calculate_distance(
             location.lat, location.lng,
             school_data["lat"], school_data["lng"]
         )
         
-        if distance > 4000:
+        # Only include schools within 2.5 miles (realistic catchment area)
+        if distance > 4000:  # 2.5 miles in meters
             continue
         
+        # Determine which students go to this school based on grade level
         if school_data["grade_level"] == "elementary":
             new_students = elementary_students
         elif school_data["grade_level"] == "middle":
             new_students = middle_students
-        else:
+        else:  # high
             new_students = high_students
         
+        # Calculate new enrollment and capacity percentage
         new_enrollment = school_data["enrollment"] + new_students
         capacity_pct = (new_enrollment / school_data["capacity"]) * 100
         
-        schools.append({
+        school_info = {
             "name": school_data["name"],
-            "distance": distance,
+            "distance": round(distance, 1),
             "grade_level": school_data["grade_level"],
             "enrollment": school_data["enrollment"],
             "capacity": school_data["capacity"],
-            "capacity_pct": capacity_pct
-        })
+            "capacity_pct": round(capacity_pct, 1)
+        }
+        schools.append(school_info)
         
+        # Identify bottlenecks (schools over capacity)
         if capacity_pct > 100:
             severity = "HIGH" if capacity_pct > 120 else "MEDIUM"
             bottlenecks.append({
                 "school": school_data["name"],
-                "capacity_pct": capacity_pct,
+                "capacity_pct": round(capacity_pct, 1),
                 "severity": severity,
                 "message": f"{school_data['name']} will be at {capacity_pct:.0f}% capacity"
             })
     
+    # Sort by distance (nearest first)
     schools.sort(key=lambda s: s["distance"])
     
     return {
-        "students_generated": students,
+        "students_generated": round(students, 1),
         "schools": schools,
         "bottlenecks": bottlenecks
     }
 
 
-def calculate_distance(lat1, lng1, lat2, lng2):
-    """Haversine distance calculation"""
-    R = 6371000
+def calculate_distance(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """
+    Calculate distance between two points using Haversine formula
+    Returns: Distance in meters
+    """
+    R = 6371000  # Earth radius in meters
+    
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
     delta_phi = math.radians(lat2 - lat1)

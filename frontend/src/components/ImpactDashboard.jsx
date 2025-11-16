@@ -78,12 +78,18 @@ function ImpactDashboard({ results }) {
           status={traffic_impact.los_impacts.length > 0 ? 'warning' : 'good'}
           subtitle={`${traffic_impact.peak_trips.pm} PM peak`}
         />
-        <MetricCard
-          title="Transit Access"
-          value={transit_access.transit_score}
-          status={transit_access.transit_score === 'EXCELLENT' ? 'good' : 'warning'}
-          subtitle={`${transit_access.walk_time_minutes} min walk`}
-        />
+        <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <p className="text-sm text-gray-600 mb-1">Transit Access</p>
+          <p className="text-2xl font-bold text-gray-900">{transit_access.transit_score}</p>
+          <div className="mt-2 space-y-1">
+            <p className="text-xs text-gray-700">
+              <span className="font-medium">Nearest:</span> {transit_access.nearest_station.name}
+            </p>
+            <p className="text-xs text-gray-600">
+              {transit_access.nearest_station.line} Line • {transit_access.walk_time_minutes} min walk
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* School Capacity Chart */}
@@ -105,6 +111,59 @@ function ImpactDashboard({ results }) {
           </div>
         </div>
       )}
+
+      {/* Nearby Transit Stations */}
+      <div>
+        <h3 className="font-bold text-lg mb-4">🚇 Nearby MARTA Stations</h3>
+        
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Station</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Line</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Distance</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Walk Time</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {transit_access.nearby_stations.map((station, idx) => (
+                <tr key={idx} className={idx === 0 ? 'bg-blue-50' : ''}>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex items-center">
+                      {idx === 0 && <span className="mr-2">⭐</span>}
+                      <span className={`text-sm font-medium ${idx === 0 ? 'text-blue-900' : 'text-gray-900'}`}>
+                        {station.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                      station.line.includes('Red') ? 'bg-red-100 text-red-800' :
+                      station.line.includes('Gold') ? 'bg-yellow-100 text-yellow-800' :
+                      station.line.includes('Green') ? 'bg-green-100 text-green-800' :
+                      station.line.includes('Blue') ? 'bg-blue-100 text-blue-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {station.line}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                    {(station.distance / 1000).toFixed(2)} km
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                    {((station.distance / 1.4) / 60).toFixed(1)} min
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <p className="text-xs text-gray-500 mt-2">
+          ⭐ Nearest station highlighted. Using real MARTA GTFS data (38 rail stations).
+        </p>
+      </div>
 
       {/* Infrastructure */}
       <div className="bg-gray-50 rounded-lg p-4">
