@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.YOUR_MAPBOX_TOKEN_HERE'
 
@@ -67,6 +69,38 @@ function Map({ selectedLocation, buildingFootprint, analysisResults, onLocationS
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
   }, [])
 
+  // Add geocoder (search box)
+  useEffect(() => {
+    if (!map.current) return
+
+    const geocoder = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      marker: false,
+      placeholder: 'Search Atlanta address...',
+      bbox: [-84.55, 33.65, -84.29, 33.89],
+      proximity: { longitude: -84.3880, latitude: 33.7490 },
+      countries: 'us'
+    })
+
+    map.current.addControl(geocoder, 'top-left')
+
+    geocoder.on('result', (e) => {
+      const coords = e.result.center
+      if (mode === 'building' && onLocationSelect) {
+        onLocationSelect({ lng: coords[0], lat: coords[1] })
+        if (!marker.current) {
+          createDraggableMarker(coords[0], coords[1])
+          addBuildingPreview(coords[0], coords[1], buildingStories * 12, buildingArea)
+        }
+      }
+    })
+
+    return () => {
+      map.current.removeControl(geocoder)
+    }
+  }, [mode, onLocationSelect, buildingStories, buildingArea])
+
   // Handle map clicks
   useEffect(() => {
     if (!map.current) return
@@ -74,7 +108,6 @@ function Map({ selectedLocation, buildingFootprint, analysisResults, onLocationS
     let isDragging = false
 
     const handleClick = (e) => {
-      // Don't handle clicks if we just finished dragging
       if (isDragging) {
         isDragging = false
         return
@@ -84,11 +117,10 @@ function Map({ selectedLocation, buildingFootprint, analysisResults, onLocationS
         const { lng, lat } = e.lngLat
         onLocationSelect({ lat, lng })
         createDraggableMarker(lng, lat)
-        addBuildingPreview(lng, lat, buildingStories * 12)
+        addBuildingPreview(lng, lat, buildingStories * 12, buildingArea)
       }
     }
 
-    // Track when dragging starts
     const handleMouseDown = () => {
       if (marker.current) {
         isDragging = true
@@ -104,9 +136,8 @@ function Map({ selectedLocation, buildingFootprint, analysisResults, onLocationS
         map.current.off('mousedown', handleMouseDown)
       }
     }
-  }, [mode, onLocationSelect, buildingStories])
+  }, [mode, onLocationSelect, buildingStories, buildingArea])
 
-  // Create draggable marker
   const createDraggableMarker = (lng, lat) => {
     marker.current = new mapboxgl.Marker({ 
       color: '#2563eb',
@@ -117,27 +148,23 @@ function Map({ selectedLocation, buildingFootprint, analysisResults, onLocationS
 
     let wasDragged = false
 
-    // Handle drag events
     marker.current.on('dragstart', () => {
       wasDragged = true
     })
 
     marker.current.on('drag', () => {
       const lngLat = marker.current.getLngLat()
-      addBuildingPreview(lngLat.lng, lngLat.lat, buildingStories * 12, false)
+      addBuildingPreview(lngLat.lng, lngLat.lat, buildingStories * 12, buildingArea, false)
     })
 
     marker.current.on('dragend', () => {
       const lngLat = marker.current.getLngLat()
-      
-      console.log('Marker drag ended at:', lngLat)
       
       if (dragEndTimer.current) {
         clearTimeout(dragEndTimer.current)
       }
 
       dragEndTimer.current = setTimeout(() => {
-        console.log('Debounce timer triggered, calling onLocationChange')
         if (onLocationChange && wasDragged) {
           onLocationChange({ lat: lngLat.lat, lng: lngLat.lng })
         }
@@ -146,18 +173,40 @@ function Map({ selectedLocation, buildingFootprint, analysisResults, onLocationS
     })
   }
 
-  // Update building when stories OR area change
+  const removeBuildingPreview = () => {
+    if (!map.current) return
+    
+    if (map.current.getLayer('building-preview')) {
+      map.current.removeLayer('building-preview')
+    }
+    
+    if (map.current.getSource('building-preview')) {
+      map.current.removeSource('building-preview')
+    }
+    
+    if (marker.current) {
+      marker.current.remove()
+      marker.current = null
+    }
+  }
+
   useEffect(() => {
     if (selectedLocation && map.current) {
       addBuildingPreview(
         selectedLocation.lng, 
         selectedLocation.lat, 
         buildingStories * 12,
-        buildingArea, // ✅ Use the area prop
-        false // Don't animate on updates
+        buildingArea,
+        false
       )
     }
-  }, [buildingStories, buildingArea, selectedLocation]) // ✅ Added buildingArea dependency
+  }, [buildingStories, buildingArea, selectedLocation])
+
+  useEffect(() => {
+    if (!selectedLocation) {
+      removeBuildingPreview()
+    }
+  }, [selectedLocation])
 
   const addBuildingPreview = (lng, lat, height, area = 2500, animate = true) => {
     if (!map.current) return
@@ -203,7 +252,6 @@ function Map({ selectedLocation, buildingFootprint, analysisResults, onLocationS
       }
     })
 
-    // Only animate camera on initial placement, not during drag
     if (animate) {
       map.current.flyTo({
         center: [lng, lat],
@@ -222,7 +270,7 @@ function Map({ selectedLocation, buildingFootprint, analysisResults, onLocationS
       {mode === 'building' && !selectedLocation && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg px-6 py-3 pointer-events-none z-10">
           <p className="text-sm font-medium text-gray-700">
-            👆 Click on the map to place a building
+            👆 Click on map or search for an address
           </p>
         </div>
       )}

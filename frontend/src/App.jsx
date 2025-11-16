@@ -173,14 +173,7 @@ function App() {
               >
                 New Building
               </button>
-              <button
-                onClick={() => setMode('highway')}
-                className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-medium transition"
-                disabled
-                title="Coming soon"
-              >
-                Highway Project
-              </button>
+              {/* ❌ REMOVED Highway Project button */}
             </div>
           )}
           
@@ -238,21 +231,16 @@ function App() {
           </div>
         )}
 
-        {/* Results Dashboard */}
+        {/* Results Dashboard - MAKE IT NARROWER */}
         {analysisResults && (
-          <div className="w-1/2 bg-white border-l border-gray-200 overflow-y-auto">
+          <div className="w-96 bg-white border-l border-gray-200 overflow-y-auto">
             <ImpactDashboard results={analysisResults} />
             
-            {/* Updated hint */}
+            {/* Re-analyze hint */}
             <div className="p-4 bg-blue-50 border-t border-blue-100">
-              <p className="text-sm text-blue-800 mb-2">
-                💡 <strong>Tips:</strong>
+              <p className="text-xs text-blue-800">
+                💡 Drag marker or adjust parameters to re-analyze
               </p>
-              <ul className="text-xs text-blue-700 space-y-1">
-                <li>🖱️ Drag the marker to test different locations</li>
-                <li>🎚️ Adjust building parameters on the left</li>
-                <li>⚡ Analysis updates automatically after changes</li>
-              </ul>
             </div>
           </div>
         )}

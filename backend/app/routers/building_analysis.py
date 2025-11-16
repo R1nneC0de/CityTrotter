@@ -15,6 +15,7 @@ from app.services import (
     gemini_service
 )
 import uuid
+from app.services.heatmap_generator import generate_impact_heatmap
 
 router = APIRouter()
 
@@ -32,7 +33,9 @@ async def analyze_building(building: BuildingRequest):
         transit_access = transit_analyzer.analyze_transit_access(building.location)
         infrastructure = infrastructure_analyzer.calculate_infrastructure_impact(building.location, building.units)
         shadow_analysis = shadow_calculator.calculate_shadows(building.location, building.footprint, building.stories)
-        economic_impact = economic_analyzer.calculate_economic_impact(building.units, building.stories, infrastructure["estimated_cost"])
+        
+        # ✅ FIXED: Call analyze_economic_impact with location parameter
+        economic_impact = economic_analyzer.analyze_economic_impact(building.location, building.units, building.stories)
         
         # Aggregate results
         all_results = {
@@ -112,3 +115,15 @@ def identify_bottlenecks(results: dict) -> list:
         })
     
     return bottlenecks
+
+@router.get("/impact-heatmap")
+async def get_impact_heatmap():
+    """Get development impact heatmap data"""
+    try:
+        heatmap_data = generate_impact_heatmap()
+        return heatmap_data
+    except Exception as e:
+        print(f"ERROR in heatmap generation: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))

@@ -60,3 +60,13 @@ export const healthCheck = async () => {
 }
 
 export default api
+
+export const getImpactHeatmap = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/analyze-building/impact-heatmap`)
+    return response.data
+  } catch (error) {
+    console.error('Error fetching heatmap:', error)
+    throw error
+  }
+}
