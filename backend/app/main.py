@@ -14,12 +14,23 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS configuration
+# CORS configuration - Updated for production
 origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+
+# Add common production URLs
+production_origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://citytrotter.vercel.app",
+    "https://*.vercel.app",  # All Vercel preview deployments
+]
+
+# Combine environment origins with production origins
+all_origins = list(set(origins + production_origins))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=all_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
